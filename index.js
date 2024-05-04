@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const todoHandler = require('./handlers/TodoHandler');
+const userHandler = require('./handlers/userHandler');
 require('dotenv').config();
+const auth = require('./middlewares/auth');
 
 // express app initialization
 const app = express();
@@ -14,17 +16,19 @@ mongoose
     .catch((err) => console.log(err));
 
 // application routes
-app.use('/todo', todoHandler);
+app.use('/todo', auth, todoHandler);
+app.use('/user', userHandler);
 
 // 404 page handle
 app.use((req, res, next) => {
     res.send('Page not found');
+    next();
 });
 
 // Server error handle
 app.use((err, req, res, next) => {
-    res.send('Server error');
-    console.log(err);
+    res.send(err);
+    next(err);
 });
 
 app.listen(3000, () => {
