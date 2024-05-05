@@ -1,3 +1,4 @@
+// dependencies
 const express = require('express');
 const mongoose = require('mongoose');
 const todoHandler = require('./handlers/TodoHandler');
@@ -31,6 +32,7 @@ app.use((err, req, res, next) => {
     next(err);
 });
 
+// server run
 app.listen(3000, () => {
     console.log('app listening at port 3000');
 });

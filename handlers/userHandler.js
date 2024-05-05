@@ -1,3 +1,4 @@
+// dependencies
 const express = require('express');
 
 const router = express.Router();
@@ -32,6 +33,7 @@ router.post('/login', async (req, res) => {
     try {
         const user = await User.find({ username: req.body.username });
 
+        // auth
         if (user && user.length > 0) {
             const isValid = await bcrypt.compare(req.body.pass, user[0].pass);
 
@@ -56,4 +58,5 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// export
 module.exports = router;

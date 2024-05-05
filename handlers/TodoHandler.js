@@ -1,8 +1,9 @@
+// dependencies
 const express = require('express');
 
 const router = express.Router();
-
 const Todo = require('../models/todoModel');
+const User = require('../models/userModel');
 
 // GET ALL THE TODOS
 router.get('/', async (req, res) => {
@@ -33,8 +34,25 @@ router.get('/:id', async (req, res) => {
 // POST A TODO
 router.post('/', async (req, res) => {
     try {
-        const newTodo = new Todo(req.body);
+        // save todo
+        const userId = req.id;
+        const newTodo = new Todo({
+            ...req.body,
+            user: userId,
+        });
         await newTodo.save();
+        const { _id } = newTodo;
+
+        // add todo id into user model
+        await User.updateOne(
+            { _id: userId },
+            {
+                $push: {
+                    todos: _id,
+                },
+                // eslint-disable-next-line comma-dangle
+            }
+        );
         res.status(200).json({
             msg: 'uploaded',
         });
@@ -74,7 +92,22 @@ router.put('/:id', async (req, res) => {
 // DELETE TODO
 router.delete('/:id', async (req, res) => {
     try {
-        await Todo.deleteOne({ _id: req.params.id });
+        // delete from todo model
+        const { id } = req.params;
+        const userId = req.id;
+        await Todo.deleteOne({ _id: id });
+
+        // delete from user model
+        await User.updateOne(
+            { _id: userId },
+            {
+                $pull: {
+                    todos: id,
+                },
+                // eslint-disable-next-line prettier/prettier
+            },
+        );
+
         res.status(200).json({
             msg: 'deleted',
         });
@@ -85,4 +118,5 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// export
 module.exports = router;

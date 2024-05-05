@@ -1,5 +1,7 @@
-const { model, Schema } = require('mongoose');
+// dependencies
+const { model, Schema, default: mongoose } = require('mongoose');
 
+// schema
 const todoSchema = new Schema({
     name: {
         type: String,
@@ -9,7 +11,14 @@ const todoSchema = new Schema({
         type: String,
         required: true,
     },
+    user: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User',
+    },
 });
 
+// model
 const Todo = model('Todo', todoSchema);
+
+// export
 module.exports = Todo;
