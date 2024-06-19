@@ -5,20 +5,27 @@ require('dotenv').config();
 // auth validation
 const auth = (req, res, next) => {
     try {
-        // get token id
         const { authorization } = req.headers;
 
         // validation check
         const token = authorization.split(' ')[1];
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const { username, id } = decoded;
+        if (token && token !== 'null') {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const { username, id } = decoded;
 
-        // info send back
-        req.username = username;
-        req.id = id;
-        next();
+            // info send back
+            req.username = username;
+            req.id = id;
+            next();
+        } else if (req.user) {
+            const { user } = req;
+            const { username, _id } = user;
+            req.username = username;
+            req.id = _id;
+            next();
+        }
     } catch {
-        next('Auth err');
+        next('Auth err .....');
     }
 };
 

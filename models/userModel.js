@@ -9,7 +9,7 @@ const userSchema = new Schema({
     },
     pass: {
         type: String,
-        required: true,
+        required: false,
     },
     todos: [
         {

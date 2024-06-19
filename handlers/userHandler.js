@@ -1,16 +1,15 @@
 // dependencies
 const express = require('express');
-
-const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 require('dotenv').config();
 
 const saltRounds = 10;
+const router = express.Router();
 
 // Sign up
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
     // pass hashing
     const hashPass = await bcrypt.hash(req.body.pass, saltRounds);
 
@@ -46,7 +45,7 @@ router.post('/login', async (req, res) => {
                 };
                 const token = jwt.sign(jwtObj, process.env.JWT_SECRET, { expiresIn: '1hr' });
 
-                res.status(200).send(token);
+                res.status(200).json(token);
             } else {
                 res.status(401).send('Auth err');
             }

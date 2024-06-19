@@ -1,11 +1,12 @@
 // dependencies
 const express = require('express');
-
-const router = express.Router();
+const auth = require('../middlewares/auth');
 const Todo = require('../models/todoModel');
 const User = require('../models/userModel');
 
-// GET ALL THE TODOS
+const router = express.Router();
+
+// Get all todos
 router.get('/', async (req, res) => {
     try {
         const todos = await Todo.find();
@@ -16,14 +17,11 @@ router.get('/', async (req, res) => {
     }
 });
 
-// GET A TODO by ID
-router.get('/:id', async (req, res) => {
+// Get user TODO by ID
+router.get('/:id', auth, async (req, res) => {
     try {
-        const data = await Todo.find({ _id: req.params.id });
-        res.status(200).send({
-            result: data,
-            msg: 'Success',
-        });
+        const data = await Todo.find({ user: req.params.id });
+        res.status(200).json(data);
     } catch (err) {
         res.status(500).json({
             error: 'There was a server side error!',
@@ -31,8 +29,8 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-// POST A TODO
-router.post('/', async (req, res) => {
+// Post a todo
+router.post('/', auth, async (req, res) => {
     try {
         // save todo
         const userId = req.id;
@@ -63,8 +61,8 @@ router.post('/', async (req, res) => {
     }
 });
 
-// PUT TODO
-router.put('/:id', async (req, res) => {
+// Put todo
+router.put('/:id', auth, async (req, res) => {
     try {
         // get the id
         const { id } = req.params;
@@ -89,8 +87,8 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// DELETE TODO
-router.delete('/:id', async (req, res) => {
+// Delete todo
+router.delete('/:id', auth, async (req, res) => {
     try {
         // delete from todo model
         const { id } = req.params;
